@@ -11,10 +11,14 @@ Space and form are the whole argument. A strict grid divides the page into
 masthead, tally, numbers, leads, cards, map and briefs, and every element
 sits inside its cell with margins and breathing room. Nothing overlaps.
 Nothing falls off the edge. Whitespace is not empty space here; it is the
-structure that keeps thirty-eight stories from becoming noise. The numbered
-lists (01–38) are the spine: each story has a number, each number has a
+structure that keeps forty-five stories from becoming noise. The numbered
+lists (01–45) are the spine: each story has a number, each number has a
 place, and the reader can travel from a headline to its pin on the map and
-back without ever getting lost.
+back without ever getting lost. The cards run in two rows of five, each
+with a bold headline banner in its region colour above a story-matched
+illustration — the banner is the headline, readable at a glance, and the
+illustration proves it. The briefs list is two columns with air between
+the lines, not a wall of text.
 
 Color and material are restrained on purpose. Warm cream paper, near-black
 ink, one Hermès-orange accent, and deep navy reserved for the moments that
@@ -35,7 +39,11 @@ built to be read two ways at once: at a glance, from the masthead and the
 numbers, and up close, story by story. That only works if the discipline
 holds — every figure cross-referenced, every story sourced, every date
 checked, every label legible at a small size. Readability is not a
-compromise with density; it is the craft that makes density honest.
+compromise with density; it is the craft that makes density honest. Trust
+is part of the craft too: every story carries its status — CONFIRMED,
+REPORTED, CLAIM, FORECAST, and DISPUTED where the sources disagree — and
+the dark card at the foot of the page says what the day means, what was
+left out, and how sure we are.
 
 The finished page must look as though it took countless hours to make,
 labored over with painstaking attention by someone at the absolute top of

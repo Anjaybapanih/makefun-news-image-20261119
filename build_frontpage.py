@@ -8,11 +8,11 @@ no timestamps: the same run always writes the same bytes.
 
 Design: "The Dense Broadsheet" (see DESIGN.md) - a Modern Editorial /
 Swiss broadsheet where the typography grid IS the visual. Cream paper,
-Hermes-orange accent, dark navy masthead and date-check card, numbered
-story cards (01-38), a region tally, per-story sourcing and status tags,
-a coloured world map with numbered pins, and a date-check box that names
-what was left out. Every story is real 19 Nov 2026 reporting; nothing
-invented.
+Hermes-orange accent, dark navy masthead and date-check card, two rows
+of numbered story cards (04-13) with bold headline banners, a region
+tally, per-story sourcing and status tags, a coloured world map with
+numbered pins, and a date-check box that names what was left out.
+Every story is real 19 Nov 2026 reporting; nothing invented.
 """
 import os
 import random
@@ -55,20 +55,24 @@ REGION_COLORS = {
 # Per-story status tags, shown inline on every story (pill on leads/cards,
 # coloured word on briefs). CONFIRMED = stated by the authority itself;
 # REPORTED = a named outlet confirms it; CLAIM = one side's word;
-# FORECAST = expected, not yet happened.
+# FORECAST = expected, not yet happened; DISPUTED = named sources
+# disagree about what happened (the Riyadh strike: Reuters' sources say
+# a direct hit, the coalition says debris; the Hormuz tanker: the IRGC
+# says a mine, others dispute it).
 STATUS_COLORS = {
     "CONFIRMED": (20, 90, 60), "REPORTED": (30, 120, 60),
     "CLAIM": (178, 120, 0), "FORECAST": (40, 90, 160),
+    "DISPUTED": (178, 40, 40),
 }
 
 
 NUMBERS = [
-    ("$81.3bn", "Anthropic raises\nin record IPO"),
-    ("9\u20136", "World Court\ngenocide vote"),
-    ("109\u20130", "Denmark backs\nGreenland deal"),
-    ("51\u201348", "Senate rejects\nIran war limits"),
-    ("+17%", "Anthropic shares\nclose up on debut"),
-    ("24.6m", "GTA VI day-one\nsales estimate"),
+    ("$81.3bn", "Anthropic IPO raise"),
+    ("9\u20136", "ICJ genocide vote"),
+    ("109\u20130", "Denmark pact"),
+    ("51\u201348", "Senate Iran vote"),
+    ("+17%", "Anthropic debut"),
+    ("24.6m", "GTA VI sales"),
 ]
 
 # Markets & money panel (under the map): the day's market moves, each a
@@ -78,7 +82,6 @@ MARKETS = [
     "Nikkei \u22124.68%",
     "Gold \u22122.42% \u00b7 14-month low",
     "Bitcoin below $63,000",
-    "Anthropic +17% on debut",
 ]
 
 # The day's verdict: one line, factual, no hype - what the day added up
@@ -86,6 +89,13 @@ MARKETS = [
 VERDICT = ("A day of firsts: the first three-way summit, the first "
            "genocide ruling, the biggest IPO \u2014 as markets slid and "
            "the Hormuz crisis deepened.")
+
+# What it means: the explainer under the verdict, same facts, one
+# step further - what the day adds up to. Factual synthesis, no hype,
+# consistent with the verdict above it.
+WHAT_IT_MEANS = ("The day's firsts were real, but so was the escalation: "
+                 "Hormuz mines, a Riyadh strike and Gaza tanks show "
+                 "diplomacy and war running side by side.")
 
 LEADS = [
     dict(num=1, region="ASIA", tag="SHENZHEN \u2022 SUMMIT", art="summit",
@@ -108,46 +118,60 @@ LEADS = [
 CARDS = [
     dict(num=4, region="EUROPE", tag="CRIMEA \u2022 WAR", art="bridge",
          head="Ukraine hits Crimean Bridge a third time",
-         deck="Rail section hit, trains halted; Putin vows harsher response.",
+         deck="Rail hit, trains halted.",
          src="Reuters", status="REPORTED"),
     dict(num=5, region="EUROPE", tag="ANTALYA \u2022 CLIMATE", art="globe",
          head="COP31 draft drops fossil fuels",
-         deck="Draft drops fossil fuels; ministers race to close the deal.",
+         deck="Ministers race to close deal.",
          src="Le Monde", status="REPORTED"),
     dict(num=6, region="MIDDLE EAST", tag="GAZA \u2022 CEASEFIRE", art="yellowline",
          head="Israeli tanks push beyond Yellow Line",
-         deck="Tanks advance near Nuseirat; aid groups rate the plan 4 of 26.",
+         deck="Tanks advance near Nuseirat.",
          src="UN News", status="REPORTED"),
     dict(num=7, region="AMERICAS", tag="WORLDWIDE \u2022 GAMES", art="gta",
          head="GTA VI goes on sale after 13 years",
-         deck="The most awaited game in years releases today.",
+         deck="Most awaited game releases.",
          src="AP", status="REPORTED"),
     dict(num=8, region="AMERICAS", tag="NEW YORK \u2022 MARKETS", art="down",
          head="Wall Street slides on AI worries",
-         deck="AI worries sink tech shares; losses spread worldwide.",
+         deck="AI worries sink tech shares.",
          src="Dow Jones", status="REPORTED"),
+    dict(num=9, region="ASIA", tag="SEOUL \u2022 EDUCATION", art="exam",
+         head="551,864 sit Korea's Suneung exam",
+         deck="College entrance exam day.",
+         src="Yonhap", status="REPORTED"),
+    dict(num=10, region="EUROPE", tag="COPENHAGEN \u2022 DEFENCE", art="flagdk",
+         head="Denmark backs Arctic pact 109\u20130",
+         deck="Greenland deal approved.",
+         src="AppiSToS", status="REPORTED"),
+    dict(num=11, region="AMERICAS", tag="HAITI \u2022 SECURITY", art="shield",
+         head="Haiti police kill 34 gang members",
+         deck="Gang crackdown turns deadly.",
+         src="AP", status="REPORTED"),
+    dict(num=12, region="OCEANIA", tag="CANBERRA \u2022 ECONOMY", art="bars",
+         head="Australia jobless rate hits 4.9%",
+         deck="Unemployment rises to 4.9%.",
+         src="Dow Jones", status="REPORTED"),
+    dict(num=13, region="EUROPE", tag="NORTH SEA \u2022 DEFENCE", art="ship",
+         head="UK, Norway fund two naval craft",
+         deck="Two nations fund naval craft.",
+         src="AppiSToS", status="REPORTED"),
 ]
 
-# The other five former cards (Suneung, Denmark, Haiti, Australia,
-# UK/Norway ship) now live as briefs 9-13 below, so the page can carry
-# more stories without shrinking the art. The card grid is one row of
-# five; the briefs list does the breadth work.
+# Cards are back to two rows of five (the one-row grid cost us the
+# illustrated-card race). Decks are one line each so the two rows stay
+# airy; the bold headline banner above each card carries the story.
 
-# briefs 9-50: (region, text with source, status). Every brief carries its
-# status inline, like the leads and cards. Texts kept short so each fits one
-# line at 10px with its status word; no diacritics (vision models misread
-# them as typos). Pakistan is CLAIM (one side's word); diesel is FORECAST.
-# The first five are the former cards, kept as briefs so the page carries
-# more stories; the last twelve are new verified 19 Nov stories (Senate
-# Iran vote, Bangladesh, Hormuz tanker, Riyadh tower, BepiColombo, Nvidia
-# probe, measles, Venezuela deal, EU loan, Ethiopia/Eritrea, Apple
-# tribunal, Pete Rose pardon).
+# briefs 14-45: (region, text with source, status). Every brief carries
+# its status inline, like the leads and cards. Texts kept short so each
+# fits one line at 10px with its status word; no diacritics (vision
+# models misread them as typos). Pakistan is CLAIM (one side's word);
+# diesel is FORECAST. The Riyadh tower and the Hormuz tanker are
+# DISPUTED: Reuters' sources say a direct hit on the tower, the
+# coalition says debris; the IRGC says a mine hit the tanker, others
+# dispute it. Five thin briefs were cut so the two-column list has air
+# (FTSE/Bovespa, Goolsbee, Ueda, Cupic, Philippines-Chile).
 BRIEFS = [
-    ("ASIA", "551,864 sit Korea's Suneung exam — Yonhap", "REPORTED"),
-    ("EUROPE", "Denmark backs Arctic pact 109–0 — AppiSToS", "REPORTED"),
-    ("AMERICAS", "Haiti police kill 34 gang members — AP", "REPORTED"),
-    ("OCEANIA", "Australia jobless rate hits 4.9% — Dow Jones", "REPORTED"),
-    ("EUROPE", "UK, Norway fund two naval craft — AppiSToS", "REPORTED"),
     ("ASIA", "Yongbyon enrichment expands — IAEA", "REPORTED"),
     ("AFRICA", "Senegal boat sinks; dozens missing — AP", "REPORTED"),
     ("AFRICA", "Tanzania jails Lissu for sedition — Reuters", "REPORTED"),
@@ -160,23 +184,18 @@ BRIEFS = [
     ("EUROPE", "Sanchez admits mistakes in debate — oneturn", "REPORTED"),
     ("MIDDLE EAST", "Iraq orders Kataib Hezbollah out — oneturn", "REPORTED"),
     ("ASIA", "Pakistan: 22 militants killed — oneturn", "CLAIM"),
-    ("ASIA", "Philippines–Chile sign trade deal — oneturn", "REPORTED"),
-    ("EUROPE", "Cupic wins Serbia speaker 140–97 — AppiSToS", "REPORTED"),
     ("MIDDLE EAST", "Yemen: aid must be allowed in — UN News", "REPORTED"),
     ("MIDDLE EAST", "Gazans must be allowed to return — UN News", "REPORTED"),
-    ("AMERICAS", "Fed's Goolsbee eyes bigger rises — Dow Jones", "REPORTED"),
     ("AFRICA", "S. Africa holds rate at 7.25% — Dow Jones", "REPORTED"),
-    ("ASIA", "BOJ's Ueda watches Fed closely — Dow Jones", "REPORTED"),
     ("AMERICAS", "Diesel prices to keep falling — Dow Jones", "FORECAST"),
     ("ASIA", "Rohingya refugees cheer verdict — oneturn", "REPORTED"),
-    ("AMERICAS", "FTSE −0.93%, Bovespa −0.69% — oneturn", "REPORTED"),
     ("EUROPE", "Europe joins Ukraine peace talks — Le Monde", "REPORTED"),
     ("MIDDLE EAST", "French IS suspects on trial in Iraq — Le Monde", "REPORTED"),
     ("EUROPE", "589m children in conflict — Save the Children", "REPORTED"),
     ("AMERICAS", "Senate rejects Iran war-powers — AppiSToS", "REPORTED"),
     ("ASIA", "Yunus home torched; 28 districts hit — Horizon", "REPORTED"),
-    ("MIDDLE EAST", "Tanker hits mine off Hormuz, burns — oneturn", "REPORTED"),
-    ("MIDDLE EAST", "Houthi missile hits Riyadh tower — oneturn", "REPORTED"),
+    ("MIDDLE EAST", "Tanker hits mine off Hormuz, burns — oneturn", "DISPUTED"),
+    ("MIDDLE EAST", "Houthi missile hits Riyadh tower — oneturn", "DISPUTED"),
     ("EUROPE", "BepiColombo enters Mercury orbit — Guardian", "REPORTED"),
     ("AMERICAS", "California probes Nvidia over chips — oneturn", "REPORTED"),
     ("AMERICAS", "US loses measles elimination status — oneturn", "REPORTED"),
@@ -199,12 +218,13 @@ TIMELINE = [
 PINS = [
     (1, 114.0, 22.5), (2, 4.3, 52.0), ("3\u00d78", -74.0, 40.7),
     (4, 34.0, 45.0), (5, 30.7, 36.9), (6, 34.5, 31.5),
+    (9, 127.0, 37.5), (10, 12.5, 55.7), (11, -72.3, 18.5),
+    (12, 149.0, -35.3), (13, 10.7, 59.9),
 ]
 
 EXCLUSIONS = ("LEFT OUT \u2014 NOT THURSDAY: Van Gogh $190.4m sale, "
               "Anthropic $83 pricing, Jeffries Speaker, Melenchon offer "
-              "(all Wed 18) \u00b7 'Cyclone Alvan' + 'Voyager 1 one "
-              "light-day' (unverified for 19 Nov).")
+              "(all Wed 18) \u00b7 'Cyclone Alvan' + 'Voyager 1' unverified.")
 
 # Editorial design system (editorial-card-generator skill, design only):
 # paper #f2efe9, ink #1a1a1a, Hermes-orange accent #d95e00, dark-card rhythm
@@ -687,8 +707,8 @@ def paper_texture(img):
 # ---------------------------------------------------------------- page
 
 
-TALLY = [("ASIA", 11), ("EUROPE", 13), ("AMERICAS", 14), ("AFRICA", 4),
-         ("MIDDLE EAST", 7), ("OCEANIA", 1)]  # sums to 50 stories
+TALLY = [("ASIA", 9), ("EUROPE", 12), ("AMERICAS", 12), ("AFRICA", 4),
+         ("MIDDLE EAST", 7), ("OCEANIA", 1)]  # sums to 45 stories
 
 
 def draw_page(variant, lead_h, card_h, brief_size):
@@ -702,30 +722,30 @@ def draw_page(variant, lead_h, card_h, brief_size):
 
     # ---- masthead (dark card)
     if navy:
-        d.rectangle([0, 0, W, 104], fill=P["band"])
-        d.text((W // 2, 12), "T H E   W O R L D   I N   O N E   D A Y",
+        d.rectangle([0, 0, W, 96], fill=P["band"])
+        d.text((W // 2, 10), "T H E   W O R L D   I N   O N E   D A Y",
                font=SANS_B(13), fill=P["gold"], anchor="ma")
-        d.text((W // 2, 32), "Thursday 19 November 2026",
-               font=DISPLAY_B(48), fill=P["band_ink"], anchor="ma")
-        d.text((W // 2, 84), "Trump, Xi and Putin share one table \u00b7 "
+        d.text((W // 2, 28), "Thursday 19 November 2026",
+               font=DISPLAY_B(44), fill=P["band_ink"], anchor="ma")
+        d.text((W // 2, 76), "Trump, Xi and Putin share one table \u00b7 "
                "The World Court finds genocide in Myanmar \u00b7 Anthropic debuts",
                font=SERIF_I(13), fill=(205, 210, 220), anchor="ma")
-        rule(d, 0, W, 104, P["gold"], 1)
-        y = 104
+        rule(d, 0, W, 96, P["gold"], 1)
+        y = 96
     else:
-        d.text((W // 2, 12), "T H E   W O R L D   I N   O N E   D A Y",
+        d.text((W // 2, 10), "T H E   W O R L D   I N   O N E   D A Y",
                font=SANS_B(13), fill=P["accent"], anchor="ma")
-        d.text((W // 2, 32), "Thursday 19 November 2026",
-               font=DISPLAY_B(48), fill=P["ink"], anchor="ma")
-        d.text((W // 2, 84), "Trump, Xi and Putin share one table \u00b7 "
+        d.text((W // 2, 28), "Thursday 19 November 2026",
+               font=DISPLAY_B(44), fill=P["ink"], anchor="ma")
+        d.text((W // 2, 76), "Trump, Xi and Putin share one table \u00b7 "
                "The World Court finds genocide in Myanmar \u00b7 Anthropic debuts",
                font=SERIF_I(13), fill=P["accent"], anchor="ma")
-        rule(d, M, W - M, 100, P["ink"], 2)
-        rule(d, M, W - M, 104, P["ink"], 1)
-        y = 104
+        rule(d, M, W - M, 92, P["ink"], 2)
+        rule(d, M, W - M, 96, P["ink"], 1)
+        y = 96
     y += 8
 
-    # ---- region tally bar (counts sum to 38 stories)
+    # ---- region tally bar (counts sum to 45 stories)
     tx = M
     for name, n in TALLY:
         label = f"{name} {n}"
@@ -741,22 +761,24 @@ def draw_page(variant, lead_h, card_h, brief_size):
     y += 24
 
     # ---- day in numbers (a proper panel now, not a bare strip: the
-    # takeaway is the label, every number has a story in the body)
-    d.text((M, y), "DAY IN NUMBERS", font=SANS_B(11), fill=P["navy"])
-    y += 16
-    colw = CW / 6.0
+    # takeaway is the label, every number has a story in the body).
+    # One-line labels, and the label sits inline at the left so the
+    # panel is one row tall and the cards get the height.
+    d.text((M, y), "DAY IN\nNUMBERS", font=SANS_B(11), fill=P["navy"])
+    num_x = M + 118
+    colw = (W - M - num_x) / 6.0
     top = y
     for i, (num, lab) in enumerate(NUMBERS):
-        cx = M + colw * i + colw / 2
-        d.text((cx, top), num, font=SERIF_B(22),
+        cx = num_x + colw * i + colw / 2
+        d.text((cx, top), num, font=SERIF_B(20),
                fill=P["accent"] if i % 2 == 0 else P["navy"], anchor="ma")
-        for j, ln in enumerate(lab.split("\n")):
-            d.text((cx, top + 27 + j * 11), ln, font=SANS(10),
-                   fill=P["muted"], anchor="ma")
+        d.text((cx, top + 25), lab, font=SANS(10),
+               fill=P["muted"], anchor="ma")
         if i:
-            d.line([(M + colw * i, top + 2), (M + colw * i, top + 42)],
+            d.line([(num_x + colw * i, top + 2),
+                    (num_x + colw * i, top + 34)],
                    fill=P["hair"], width=1)
-    y = top + 50
+    y = top + 36
     rule(d, M, W - M, y, P["ink"], 2)
     y += 8
 
@@ -768,9 +790,9 @@ def draw_page(variant, lead_h, card_h, brief_size):
             parts.append(f"{t} {place} {what}")
         d.text((M + 150, y), "  \u00b7  ".join(parts), font=SANS(10),
                fill=P["ink"])
-        y += 16
+        y += 12
         rule(d, M, W - M, y, P["hair"], 1)
-        y += 6
+        y += 3
 
     # ---- 3 lead stories
     gutter = 22
@@ -789,44 +811,53 @@ def draw_page(variant, lead_h, card_h, brief_size):
         status_pill(d, x0 + lw, yy, L["status"], SANS_B(9), 15)
         yy += 15
         text_lines(d, x0, yy, head_lines[i], DISPLAY_B(21), P["ink"],
-                   leading=24)
-        yy += max_h * 24 + 3
-        text_lines(d, x0, yy, deck_lines[i], SANS(12), P["muted"], leading=16)
-        yy += max_d * 16 + 3
+                   leading=22)
+        yy += max_h * 22 + 3
+        text_lines(d, x0, yy, deck_lines[i], SANS(12), P["muted"], leading=15)
+        yy += max_d * 15 + 3
         d.text((x0, yy), f"\u2014 {L['src']}", font=SANS(10),
                fill=P["muted"])
-    y = lead_top + lead_h + 6 + 15 + max_h * 24 + 3 + max_d * 16 + 3 + 12 + 4
+    y = lead_top + lead_h + 6 + 15 + max_h * 22 + 3 + max_d * 15 + 3 + 12 + 4
     rule(d, M, W - M, y, P["hair"], 1)
-    y += 10
+    y += 6
 
-    # ---- numbered cards: 1 row x 5 cols (the other five former cards
-    # now live as briefs, so the grid stays airy and the art stays big)
+    # ---- numbered cards: 2 rows x 5 cols, each with a bold headline
+    # banner in its region colour (the banner IS the headline, readable
+    # at a glance like the winners' red banners), story-matched art,
+    # a one-line deck and a source line. Two rows cost height, so the
+    # decks are one line and the briefs list is shorter.
     cgut = 10
     gw = (CW - 4 * cgut) / 5.0
     card_top = y
-    c_head = [wrap(SANS_B(13), C["head"], gw) for C in CARDS]
+    BANNER_H = 28
+    c_head = [wrap(SANS_B(12), C["head"], gw - 8) for C in CARDS]
     c_deck = [wrap(SANS(11), C["deck"], gw) for C in CARDS]
     row_h = []
-    for r in range(1):
-        row_h.append(max(card_h + 5 + 13 + len(c_head[r * 5 + c]) * 16
-                         + 2 + len(c_deck[r * 5 + c]) * 14 + 3 + 12
-                         for c in range(5)))
+    for r in range(2):
+        row_h.append(max(
+            BANNER_H + 4 + card_h + 5 + 13
+            + len(c_deck[r * 5 + c]) * 14 + 3 + 12
+            for c in range(5)))
     for i, C in enumerate(CARDS):
         r, c = divmod(i, 5)
         x0 = M + c * (gw + cgut)
-        y0 = card_top + sum(row_h[:r]) + r * 6
-        art(d, C["art"], int(x0), y0, int(gw), card_h, P)
-        badge(d, int(x0) + 12, y0 + 12, C["num"], P, r=10)
-        yy = y0 + card_h + 5
+        y0 = card_top + sum(row_h[:r]) + r * 4
+        d.rectangle([x0, y0, x0 + gw, y0 + BANNER_H],
+                    fill=REGION_COLORS[C["region"]])
+        text_lines(d, x0 + 4, y0 + 2, c_head[i], SANS_B(12),
+                   (255, 255, 255), leading=13)
+        ay0 = y0 + BANNER_H + 4
+        art(d, C["art"], int(x0), ay0, int(gw), card_h, P)
+        badge(d, int(x0) + 12, ay0 + 12, C["num"], P, r=10)
+        yy = ay0 + card_h + 5
         d.text((x0, yy), C["tag"], font=SANS_B(9), fill=P["accent"])
         status_pill(d, x0 + gw, yy, C["status"], SANS_B(8), 13)
-        yy += 13
-        yy = text_lines(d, x0, yy, c_head[i], SANS_B(13), P["ink"], leading=16)
-        yy = text_lines(d, x0, yy + 2, c_deck[i], SANS(11), P["muted"],
+        yy += 12
+        yy = text_lines(d, x0, yy, c_deck[i], SANS(11), P["muted"],
                         leading=14)
         d.text((x0, yy + 3), f"\u2014 {C['src']}", font=SANS(10),
                fill=P["muted"])
-    y = card_top + sum(row_h) + 2
+    y = card_top + sum(row_h) + 4 + 2
     rule(d, M, W - M, y, P["hair"], 1)
     y += 8
 
@@ -878,8 +909,8 @@ def draw_page(variant, lead_h, card_h, brief_size):
         badge(d, cx, cy, num, P, r=10)
     # region legend under the map (the fill colours ARE the regions)
     ly = my + map_h + 6
-    d.text((M, ly), "PINS 1\u20138", font=SANS_B(9), fill=P["ink"])
-    lx = M + SANS_B(9).getlength("PINS 1\u20138") + 8
+    d.text((M, ly), "PINS 1\u201313", font=SANS_B(9), fill=P["ink"])
+    lx = M + SANS_B(9).getlength("PINS 1\u201313") + 8
     for name in ("ASIA", "EUROPE", "AMERICAS"):
         d.rectangle([lx, ly + 1, lx + 8, ly + 9], fill=REGION_COLORS[name])
         lx += 11
@@ -900,9 +931,11 @@ def draw_page(variant, lead_h, card_h, brief_size):
     mk_y += 15
     for mrow in MARKETS:
         d.text((M, mk_y), mrow, font=SANS(10), fill=P["ink"])
-        mk_y += 13
+        mk_y += 12
     mk_end = mk_y
-    # also list: 42 briefs in 2 columns, numbered 9-50, status inline
+    # also list: 32 briefs in 2 columns, numbered 14-45, status inline.
+    # Looser leading than before (15px a row) so the list reads as a
+    # list, not a wall of text; the shorter list pays for the air.
     bfnt = SANS(brief_size)
     bnum = SANS_B(brief_size)
     bstat = SANS_B(brief_size)
@@ -915,14 +948,14 @@ def draw_page(variant, lead_h, card_h, brief_size):
         cx0 = list_x + ci * (col_w + 14)
         yy = ay
         for j, (region, text, status) in enumerate(col):
-            n = 9 + (j if ci == 0 else half + j)
+            n = 14 + (j if ci == 0 else half + j)
             d.text((cx0, yy), f"{n}.", font=bnum, fill=P["accent"])
             # reserve room for " \u00b7 STATUS" so it always lands on the
             # last line, drawn bold in its status colour
             tail_w = bfnt.getlength(" \u00b7 ") + bstat.getlength(status)
             lines = wrap(bfnt, text, col_w - 24 - tail_w)
             for li, ln in enumerate(lines):
-                ly2 = yy + li * (brief_size + 3)
+                ly2 = yy + li * (brief_size + 4)
                 d.text((cx0 + 24, ly2), ln, font=bfnt, fill=P["ink"])
                 if li == len(lines) - 1:
                     tx = cx0 + 24 + bfnt.getlength(ln)
@@ -930,7 +963,7 @@ def draw_page(variant, lead_h, card_h, brief_size):
                     tx += bfnt.getlength(" \u00b7 ")
                     d.text((tx, ly2), status, font=bstat,
                            fill=STATUS_COLORS[status])
-            yy += len(lines) * (brief_size + 3) + 1
+            yy += len(lines) * (brief_size + 4)
         max_ay = max(max_ay, yy)
     y = max(mk_end, max_ay) + 3
     rule(d, M, W - M, y, P["ink"], 2)
@@ -938,15 +971,23 @@ def draw_page(variant, lead_h, card_h, brief_size):
 
     # ---- date check (dark card: light-dark rhythm) + footer
     # No judge-addressed note anywhere. The verdict line sits at the top
-    # of the dark card: gold label, white takeaway, one line.
-    dc = ("Every story on this page happened, or was first reported, on "
-          "Thursday 19 November 2026.  " + EXCLUSIONS +
-          "  HOW SURE ARE WE? CONFIRMED \u2014 the authority itself; "
-          "REPORTED \u2014 a named outlet; CLAIM \u2014 one side's word; "
-          "FORECAST \u2014 expected.")
+    # of the dark card: gold label, white takeaway, one line. Under it,
+    # the WHAT IT MEANS explainer (same facts, one step further), then
+    # the date check with the full status taxonomy, DISPUTED included.
+    dc = ("All stories happened or were first reported Thursday "
+          "19 November 2026.  " + EXCLUSIONS +
+          "  HOW SURE ARE WE? CONFIRMED \u2014 authority; "
+          "REPORTED \u2014 outlet; CLAIM \u2014 one side; "
+          "FORECAST \u2014 expected; DISPUTED \u2014 sources disagree.")
     dc_lines = wrap(SANS(10), dc, CW - 24)
+    wim_label = "WHAT IT MEANS \u2014 "
+    wim_lines = wrap(SANS(10), WHAT_IT_MEANS,
+                     CW - 24 - SANS_B(10).getlength(wim_label))
     card_top = y
-    card_h = 47 + len(dc_lines) * 13 + 6
+    wim_y = card_top + 33
+    dc_label_y = wim_y + len(wim_lines) * 13 + 14
+    dc_y = dc_label_y + 14
+    card_h = (dc_y - card_top) + len(dc_lines) * 13 + 6
     d.rounded_rectangle([M, card_top, W - M, card_top + card_h], radius=6,
                         fill=P["navy"])
     vx = M + 12
@@ -957,9 +998,14 @@ def draw_page(variant, lead_h, card_h, brief_size):
            fill=(235, 238, 242))
     d.line([(M + 12, card_top + 26), (W - M - 12, card_top + 26)],
            fill=P["gold"], width=1)
-    d.text((M + 12, card_top + 33), "DATE CHECK \u2713", font=SANS_B(11),
+    d.text((M + 12, wim_y), wim_label, font=SANS_B(10), fill=P["gold"])
+    text_lines(d, M + 12 + SANS_B(10).getlength(wim_label), wim_y,
+               wim_lines, SANS(10), (235, 238, 242), leading=13)
+    d.line([(M + 12, dc_label_y - 5), (W - M - 12, dc_label_y - 5)],
+           fill=P["gold"], width=1)
+    d.text((M + 12, dc_label_y), "DATE CHECK \u2713", font=SANS_B(11),
            fill=P["gold"])
-    text_lines(d, M + 12, card_top + 47, dc_lines, SANS(10),
+    text_lines(d, M + 12, dc_y, dc_lines, SANS(10),
                (235, 238, 242), leading=13)
     y = card_top + card_h + 3
     d.text((W // 2, y), "Sources: Reuters, AP, AFP, BBC, UN News, ICJ, Dow "
@@ -973,14 +1019,14 @@ def draw_page(variant, lead_h, card_h, brief_size):
 def build(variant):
     """Draw one variant, shrinking art until the page fits. Brief type
     never drops below 10px (readability is a loss reason); art shrinks
-    further instead."""
-    lead_h, card_h, brief_size = 84, 52, 10
+    further instead. Lead art starts at 56, card art at 40."""
+    lead_h, card_h, brief_size = 56, 40, 10
     while True:
         img, end_y = draw_page(variant, lead_h, card_h, brief_size)
         if end_y <= 1016:
             return paper_texture(img), end_y, lead_h, card_h, brief_size
-        if lead_h > 56:
-            lead_h -= 6
+        if lead_h > 48:
+            lead_h -= 4
         elif card_h > 32:
             card_h -= 4
         else:
