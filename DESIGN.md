@@ -8,17 +8,19 @@ for reading — columns, rules, numbers and pictures locked to one grid —
 and its beauty is the beauty of that machine working perfectly.
 
 Space and form are the whole argument. A strict grid divides the page into
-masthead, tally, numbers, leads, cards, map and briefs, and every element
+masthead, region band, numbers, leads, cards, map and briefs, and every element
 sits inside its cell with margins and breathing room. Nothing overlaps.
 Nothing falls off the edge. Whitespace is not empty space here; it is the
-structure that keeps forty-five stories from becoming noise. The numbered
-lists (01–45) are the spine: each story has a number, each number has a
+structure that keeps forty-one stories from becoming noise. The numbered
+lists (01–41) are the spine: each story has a number, each number has a
 place, and the reader can travel from a headline to its pin on the map and
 back without ever getting lost. The cards run in two rows of five, each
 with a bold headline banner in its region colour above a story-matched
 illustration — the banner is the headline, readable at a glance, and the
 illustration proves it. The briefs list is two columns with air between
-the lines, not a wall of text.
+the lines, not a wall of text. There are few modules and each is large:
+one numbers band carries the markets ticker, and one synthesis box holds
+the verdict — the page never crams in furniture for its own sake.
 
 Color and material are restrained on purpose. Warm cream paper, near-black
 ink, one Hermès-orange accent, and deep navy reserved for the moments that

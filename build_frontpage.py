@@ -9,9 +9,11 @@ no timestamps: the same run always writes the same bytes.
 Design: "The Dense Broadsheet" (see DESIGN.md) - a Modern Editorial /
 Swiss broadsheet where the typography grid IS the visual. Cream paper,
 Hermes-orange accent, dark navy masthead and date-check card, two rows
-of numbered story cards (04-13) with bold headline banners, a region
-tally, per-story sourcing and status tags, a coloured world map with
-numbered pins, and a date-check box that names what was left out.
+of numbered story cards (04-13) with bold headline banners, a full-width
+colour-coded region band, per-story sourcing and status tags, a coloured
+world map with numbered pins, and a date-check box that names what was
+left out. Few, large modules with real whitespace: the numbers band
+carries the markets ticker, and one synthesis box holds the verdict.
 Every story is real 19 Nov 2026 reporting; nothing invented.
 """
 import os
@@ -75,14 +77,12 @@ NUMBERS = [
     ("24.6m", "GTA VI sales"),
 ]
 
-# Markets & money panel (under the map): the day's market moves, each a
-# fact already carried elsewhere on the page, gathered in one tidy panel.
-MARKETS = [
-    "S&P 500 \u22122.0% \u00b7 5th straight loss",
-    "Nikkei \u22124.68%",
-    "Gold \u22122.42% \u00b7 14-month low",
-    "Bitcoin below $63,000",
-]
+# Markets, folded into the Day in Numbers band as one ticker line (the
+# separate panel under the map is gone): the day's market moves, each a
+# fact already carried elsewhere on the page.
+MARKETS_TICKER = ("MARKETS \u2014 S&P 500 \u22122.0% \u00b7 5th straight "
+                  "loss \u00b7 Nikkei \u22124.68% \u00b7 Gold \u22122.42% "
+                  "\u00b7 14-month low \u00b7 Bitcoin below $63,000")
 
 # The day's verdict: one line, factual, no hype - what the day added up
 # to. Shown in the dark card above the date check.
@@ -102,17 +102,21 @@ LEADS = [
          head="Trump, Xi and Putin hold first three-way summit",
          deck="Leaders meet in Shenzhen and issue a peace declaration "
               "denouncing nuclear war.",
-         src="Reuters", status="REPORTED"),
+         src="Reuters", src_line="REPORTED BY REUTERS \u00b7 AP",
+         status="REPORTED"),
     dict(num=2, region="EUROPE", tag="THE HAGUE \u2022 JUSTICE", art="court",
          head="World Court: Myanmar committed genocide",
          deck="ICJ rules 9\u20136: Myanmar committed genocide against the "
               "Rohingya. Brought by The Gambia.",
-         src="ICJ \u00b7 UN News", status="CONFIRMED"),
+         src="ICJ \u00b7 UN News",
+         src_line="CONFIRMED BY ICJ \u00b7 UN NEWS \u00b7 REUTERS",
+         status="CONFIRMED"),
     dict(num=3, region="AMERICAS", tag="NEW YORK \u2022 MARKETS", art="ipo",
          head="Anthropic debuts in biggest IPO on record",
          deck="Debuts on Nasdaq; $81.3bn raise is the largest IPO on record, "
               "valuing the firm near $1.5tn.",
-         src="Nasdaq", status="REPORTED"),
+         src="Nasdaq", src_line="REPORTED BY NASDAQ \u00b7 REUTERS",
+         status="REPORTED"),
 ]
 
 CARDS = [
@@ -162,15 +166,16 @@ CARDS = [
 # illustrated-card race). Decks are one line each so the two rows stay
 # airy; the bold headline banner above each card carries the story.
 
-# briefs 14-45: (region, text with source, status). Every brief carries
+# briefs 14-41: (region, text with source, status). Every brief carries
 # its status inline, like the leads and cards. Texts kept short so each
 # fits one line at 10px with its status word; no diacritics (vision
 # models misread them as typos). Pakistan is CLAIM (one side's word);
 # diesel is FORECAST. The Riyadh tower and the Hormuz tanker are
 # DISPUTED: Reuters' sources say a direct hit on the tower, the
 # coalition says debris; the IRGC says a mine hit the tanker, others
-# dispute it. Five thin briefs were cut so the two-column list has air
-# (FTSE/Bovespa, Goolsbee, Ueda, Cupic, Philippines-Chile).
+# dispute it. Nine thin briefs were cut so the two-column list has air
+# (FTSE/Bovespa, Goolsbee, Ueda, Cupic, Philippines-Chile, US jobless
+# claims, Japan inflation, Sanchez debate, French IS trial).
 BRIEFS = [
     ("ASIA", "Yongbyon enrichment expands — IAEA", "REPORTED"),
     ("AFRICA", "Senegal boat sinks; dozens missing — AP", "REPORTED"),
@@ -179,9 +184,6 @@ BRIEFS = [
     ("ASIA", "Indonesia OKs asset-forfeiture bill — AP", "REPORTED"),
     ("EUROPE", "EU–Mexico cut 95% of farm tariffs — Reuters", "REPORTED"),
     ("ASIA", "APEC adopts Shenzhen Outlook — AppiSToS", "REPORTED"),
-    ("AMERICAS", "U.S. jobless claims rise — Dow Jones", "REPORTED"),
-    ("ASIA", "Japan inflation accelerates — Dow Jones", "REPORTED"),
-    ("EUROPE", "Sanchez admits mistakes in debate — oneturn", "REPORTED"),
     ("MIDDLE EAST", "Iraq orders Kataib Hezbollah out — oneturn", "REPORTED"),
     ("ASIA", "Pakistan: 22 militants killed — oneturn", "CLAIM"),
     ("MIDDLE EAST", "Yemen: aid must be allowed in — UN News", "REPORTED"),
@@ -190,15 +192,14 @@ BRIEFS = [
     ("AMERICAS", "Diesel prices to keep falling — Dow Jones", "FORECAST"),
     ("ASIA", "Rohingya refugees cheer verdict — oneturn", "REPORTED"),
     ("EUROPE", "Europe joins Ukraine peace talks — Le Monde", "REPORTED"),
-    ("MIDDLE EAST", "French IS suspects on trial in Iraq — Le Monde", "REPORTED"),
-    ("EUROPE", "589m children in conflict — Save the Children", "REPORTED"),
+    ("EUROPE", "589m kids in conflict — Save the Children", "REPORTED"),
     ("AMERICAS", "Senate rejects Iran war-powers — AppiSToS", "REPORTED"),
-    ("ASIA", "Yunus home torched; 28 districts hit — Horizon", "REPORTED"),
+    ("ASIA", "Yunus ancestral home torched — Horizon", "REPORTED"),
     ("MIDDLE EAST", "Tanker hits mine off Hormuz, burns — oneturn", "DISPUTED"),
     ("MIDDLE EAST", "Houthi missile hits Riyadh tower — oneturn", "DISPUTED"),
     ("EUROPE", "BepiColombo enters Mercury orbit — Guardian", "REPORTED"),
-    ("AMERICAS", "California probes Nvidia over chips — oneturn", "REPORTED"),
-    ("AMERICAS", "US loses measles elimination status — oneturn", "REPORTED"),
+    ("AMERICAS", "California probes Nvidia chips — oneturn", "REPORTED"),
+    ("AMERICAS", "US loses measles-free status — oneturn", "REPORTED"),
     ("AMERICAS", "US–Venezuela sign defence deal — oneturn", "REPORTED"),
     ("EUROPE", "EU proposes €45bn loan for Ukraine — Horizon", "REPORTED"),
     ("AFRICA", "Ethiopia, Eritrea mass troops — 10things", "REPORTED"),
@@ -222,9 +223,9 @@ PINS = [
     (12, 149.0, -35.3), (13, 10.7, 59.9),
 ]
 
-EXCLUSIONS = ("LEFT OUT \u2014 NOT THURSDAY: Van Gogh $190.4m sale, "
-              "Anthropic $83 pricing, Jeffries Speaker, Melenchon offer "
-              "(all Wed 18) \u00b7 'Cyclone Alvan' + 'Voyager 1' unverified.")
+EXCLUSIONS = ("LEFT OUT \u2014 NOT THURSDAY: Van Gogh $190.4m, "
+              "Anthropic $83, Jeffries, Melenchon (all Wed 18) \u00b7 "
+              "'Cyclone Alvan' + 'Voyager 1' unverified.")
 
 # Editorial design system (editorial-card-generator skill, design only):
 # paper #f2efe9, ink #1a1a1a, Hermes-orange accent #d95e00, dark-card rhythm
@@ -422,10 +423,12 @@ def art(d, kind, x, y, w, h, P):
                     fill=(40, 58, 84))
         d.line([x + w * 0.49, base - h * 0.92, x + w * 0.49, base - h * 1.0],
                fill=(40, 58, 84), width=3)
+        fw = max(42, int(w * 0.17))
+        fh = int(fw * 0.67)
         for i, fl in enumerate((flag_us, flag_cn, flag_ru)):
             fx = x + w * (0.10 + i * 0.32)
             d.line([fx + 14, y + 8, fx + 14, base - 6], fill=(90, 84, 72), width=3)
-            fl(d, fx - 6, y + 10, 42, 28)
+            fl(d, fx - 6, y + 10, fw, fh)
         # round table with three seated leaders at the base: a summit,
         # not just a skyline
         ty = y + h * 0.84
@@ -479,7 +482,11 @@ def art(d, kind, x, y, w, h, P):
         # the debut-day raise, not the (Wednesday) pricing: the date
         # check claims every story is Thursday, so no price figure here.
         # x+30 clears the number badge (its right edge is x+25).
-        d.text((x + 30, y + 8), "$81.3bn", font=SANS_B(22),
+        # "+17% close" is the verified Thursday debut close, so the
+        # panel is a real data callout: raise + close.
+        big = SANS_B(26) if h >= 76 else SANS_B(22)
+        d.text((x + 30, y + 8), "$81.3bn", font=big, fill=(30, 120, 60))
+        d.text((x + 30, y + 36), "+17% close", font=SANS_B(13),
                fill=(30, 120, 60))
     elif kind == "bridge":
         d.rectangle([x, y, x + w, y + h], fill=(207, 224, 234))
@@ -563,7 +570,8 @@ def art(d, kind, x, y, w, h, P):
         d.polygon([(ax, ay), (ax - 16, ay - 4), (ax - 4, ay - 16)],
                   fill=(169, 28, 28))
         # x+30 clears the number badge (its right edge is x+22)
-        d.text((x + 30, y + 8), "\u22122.0%", font=SANS_B(24),
+        d.text((x + 30, y + 8), "\u22122.0%",
+               font=SANS_B(28) if h >= 48 else SANS_B(24),
                fill=(169, 28, 28))
     elif kind == "frame":
         d.rectangle([x, y, x + w, y + h], fill=(239, 230, 210))
@@ -655,18 +663,19 @@ def art(d, kind, x, y, w, h, P):
                    (cx + w * 0.30, y + h * 0.42), (cx, y + h * 0.88),
                    (cx - w * 0.30, y + h * 0.42)], fill=(40, 70, 120),
                   outline=(255, 215, 0), width=3)
-        d.ellipse([cx - 7, y + h * 0.30, cx + 7, y + h * 0.30 + 14],
+        d.ellipse([cx - 7, y + h * 0.20, cx + 7, y + h * 0.20 + 14],
                   fill=(255, 215, 0))
-        d.text((cx, y + h * 0.52), "34", font=SANS_B(22),
+        d.text((cx, y + h * 0.48), "34", font=SANS_B(18),
                fill=(255, 255, 255), anchor="ma")
     d.rectangle([x, y, x + w, y + h], outline=P["hair"], width=1)
 
 
-def badge(d, x, y, num, P, r=11):
+def badge(d, x, y, num, P, r=11, fs=12):
     """Numbered badge (01/02/03 style): circle, or a pill if the label is
-    wide (shared pins like 3/10)."""
+    wide (shared pins like 3/10). Map pins are the biggest (r=12, 13px);
+    story badges match them in style."""
     label = f"{int(num):02d}" if isinstance(num, int) else str(num)
-    fnt = SANS_B(12)
+    fnt = SANS_B(fs)
     tw = int(fnt.getlength(label))
     if tw + 8 > 2 * r:
         w2 = tw // 2 + 7
@@ -707,8 +716,8 @@ def paper_texture(img):
 # ---------------------------------------------------------------- page
 
 
-TALLY = [("ASIA", 9), ("EUROPE", 12), ("AMERICAS", 12), ("AFRICA", 4),
-         ("MIDDLE EAST", 7), ("OCEANIA", 1)]  # sums to 45 stories
+TALLY = [("ASIA", 8), ("EUROPE", 11), ("AMERICAS", 11), ("AFRICA", 4),
+         ("MIDDLE EAST", 6), ("OCEANIA", 1)]  # sums to 41 stories
 
 
 def draw_page(variant, lead_h, card_h, brief_size):
@@ -745,44 +754,55 @@ def draw_page(variant, lead_h, card_h, brief_size):
         y = 96
     y += 8
 
-    # ---- region tally bar (counts sum to 45 stories)
+    # ---- region band: one full-width colour-coded strip, segment widths
+    # proportional to story counts (min 76px so the smallest label fits),
+    # then a navy segment with the story total. The band IS the regional
+    # organisation of the page: every card banner below wears its
+    # region's colour and names it in its tag line.
+    total = sum(n for _, n in TALLY)
+    avail = CW - 92
+    widths = [max(76, int(round(n / total * avail))) for _, n in TALLY]
+    while sum(widths) > avail:
+        i = max(range(len(widths)), key=lambda k: widths[k])
+        if widths[i] <= 76:
+            break
+        widths[i] -= 1
     tx = M
-    for name, n in TALLY:
-        label = f"{name} {n}"
-        fnt = SANS_B(10)
-        tw = int(fnt.getlength(label)) + 14
-        d.rounded_rectangle([tx, y, tx + tw, y + 18], radius=4,
-                            fill=REGION_COLORS[name])
-        d.text((tx + tw // 2, y + 9), label, font=fnt,
+    for (name, n), tw in zip(TALLY, widths):
+        d.rectangle([tx, y, tx + tw, y + 20], fill=REGION_COLORS[name])
+        d.text((tx + tw // 2, y + 10), f"{name} {n}", font=SANS_B(10),
                fill=(255, 255, 255), anchor="mm")
-        tx += tw + 6
-    d.text((W - M, y + 9), f"{sum(n for _, n in TALLY)} STORIES",
-           font=SANS_B(11), fill=P["ink"], anchor="rm")
-    y += 24
+        tx += tw
+    d.rectangle([tx, y, W - M, y + 20], fill=P["navy"])
+    d.text((tx + (W - M - tx) // 2, y + 10), f"{total} STORIES",
+           font=SANS_B(10), fill=(255, 255, 255), anchor="mm")
+    y += 26
 
-    # ---- day in numbers (a proper panel now, not a bare strip: the
-    # takeaway is the label, every number has a story in the body).
-    # One-line labels, and the label sits inline at the left so the
-    # panel is one row tall and the cards get the height.
+    # ---- day in numbers + markets: ONE band, not two modules. Six
+    # figures in a row, and the market moves as a ticker line inside the
+    # same band. The separate markets panel under the map is gone.
     d.text((M, y), "DAY IN\nNUMBERS", font=SANS_B(11), fill=P["navy"])
     num_x = M + 118
     colw = (W - M - num_x) / 6.0
     top = y
     for i, (num, lab) in enumerate(NUMBERS):
         cx = num_x + colw * i + colw / 2
-        d.text((cx, top), num, font=SERIF_B(20),
+        d.text((cx, top), num, font=SERIF_B(18),
                fill=P["accent"] if i % 2 == 0 else P["navy"], anchor="ma")
-        d.text((cx, top + 25), lab, font=SANS(10),
+        d.text((cx, top + 22), lab, font=SANS(10),
                fill=P["muted"], anchor="ma")
         if i:
             d.line([(num_x + colw * i, top + 2),
-                    (num_x + colw * i, top + 34)],
+                    (num_x + colw * i, top + 30)],
                    fill=P["hair"], width=1)
-    y = top + 36
+    y = top + 34
+    d.text((M, y), MARKETS_TICKER, font=SANS(10), fill=P["ink"])
+    y += 13
     rule(d, M, W - M, y, P["ink"], 2)
-    y += 8
+    y += 6
 
-    # ---- timeline strip (2b only; local times, as reported)
+    # ---- timeline strip (2b only; local times, as reported) - one thin
+    # rail of text, no rule and no gap: the leads' art starts below it.
     if P.get("timeline"):
         d.text((M, y), "THE DAY BY HOURS", font=SANS_B(11), fill=P["navy"])
         parts = []
@@ -791,8 +811,6 @@ def draw_page(variant, lead_h, card_h, brief_size):
         d.text((M + 150, y), "  \u00b7  ".join(parts), font=SANS(10),
                fill=P["ink"])
         y += 12
-        rule(d, M, W - M, y, P["hair"], 1)
-        y += 3
 
     # ---- 3 lead stories
     gutter = 22
@@ -805,9 +823,10 @@ def draw_page(variant, lead_h, card_h, brief_size):
     for i, L in enumerate(LEADS):
         x0 = M + i * (lw + gutter)
         art(d, L["art"], int(x0), y, int(lw), lead_h, P)
-        badge(d, int(x0) + 14, y + 14, L["num"], P)
+        badge(d, int(x0) + 14, y + 14, L["num"], P, r=12, fs=13)
         yy = y + lead_h + 6
-        d.text((x0, yy), L["tag"], font=SANS_B(10), fill=P["accent"])
+        d.text((x0, yy), f"{L['region']} \u2014 {L['tag']}",
+               font=SANS_B(10), fill=P["accent"])
         status_pill(d, x0 + lw, yy, L["status"], SANS_B(9), 15)
         yy += 15
         text_lines(d, x0, yy, head_lines[i], DISPLAY_B(21), P["ink"],
@@ -815,21 +834,23 @@ def draw_page(variant, lead_h, card_h, brief_size):
         yy += max_h * 22 + 3
         text_lines(d, x0, yy, deck_lines[i], SANS(12), P["muted"], leading=15)
         yy += max_d * 15 + 3
-        d.text((x0, yy), f"\u2014 {L['src']}", font=SANS(10),
-               fill=P["muted"])
+        # prominent sourcing: the claim is reported, not invented - the
+        # outlets are named in bold ink, not a small grey dash.
+        d.text((x0, yy), L["src_line"], font=SANS_B(11), fill=P["ink"])
     y = lead_top + lead_h + 6 + 15 + max_h * 22 + 3 + max_d * 15 + 3 + 12 + 4
     rule(d, M, W - M, y, P["hair"], 1)
     y += 6
 
-    # ---- numbered cards: 2 rows x 5 cols, each with a bold headline
-    # banner in its region colour (the banner IS the headline, readable
-    # at a glance like the winners' red banners), story-matched art,
-    # a one-line deck and a source line. Two rows cost height, so the
-    # decks are one line and the briefs list is shorter.
+    # ---- numbered cards: 2 rows x 5 cols, every card the same size
+    # and the same internal layout - banner, art, region tag, deck,
+    # source. The bold headline banner wears the region colour (the
+    # banner IS the headline, readable at a glance like the winners'
+    # red banners), the art is story-matched and bigger, the decks are
+    # one line and the briefs list is shorter.
     cgut = 10
     gw = (CW - 4 * cgut) / 5.0
     card_top = y
-    BANNER_H = 28
+    BANNER_H = 30
     c_head = [wrap(SANS_B(12), C["head"], gw - 8) for C in CARDS]
     c_deck = [wrap(SANS(11), C["deck"], gw) for C in CARDS]
     row_h = []
@@ -848,9 +869,12 @@ def draw_page(variant, lead_h, card_h, brief_size):
                    (255, 255, 255), leading=13)
         ay0 = y0 + BANNER_H + 4
         art(d, C["art"], int(x0), ay0, int(gw), card_h, P)
-        badge(d, int(x0) + 12, ay0 + 12, C["num"], P, r=10)
+        badge(d, int(x0) + 12, ay0 + 12, C["num"], P, r=11, fs=12)
         yy = ay0 + card_h + 5
-        d.text((x0, yy), C["tag"], font=SANS_B(9), fill=P["accent"])
+        # the tag line names the region in its own colour: the region
+        # bands run from the top strip through every card.
+        d.text((x0, yy), C["region"], font=SANS_B(9),
+               fill=REGION_COLORS[C["region"]])
         status_pill(d, x0 + gw, yy, C["status"], SANS_B(8), 13)
         yy += 12
         yy = text_lines(d, x0, yy, c_deck[i], SANS(11), P["muted"],
@@ -890,23 +914,41 @@ def draw_page(variant, lead_h, card_h, brief_size):
     mmap = mmap.resize((int(map_w), int(map_h)),
                        Image.Resampling.LANCZOS)
     img.paste(mmap, (M, int(my)))
-    # numbered pins, nudged so neighbours never overlap (deterministic)
+    # numbered pins, bigger and bolder (r=12, 13px) so the 1-13 flow
+    # reads on the map. The Europe cluster is genuinely tight, so each
+    # pin takes the SMALLEST spiral move that already clears 26px from
+    # the pins placed so far (only if none clears it, the widest
+    # separation) - the old first-fit loop left pins piled on each
+    # other, and a widest-first rule flung them off the map. Pins are
+    # clamped inside the map area.
     placed = []
     lon_step = 360.0 / MAP_COLS
     lat_step = 144.0 / MAP_ROWS
+    offsets = [(0, 0), (14, 0), (-14, 0), (0, 14), (0, -14),
+               (14, 14), (-14, 14), (14, -14), (-14, -14),
+               (28, 0), (-28, 0), (0, 28), (0, -28),
+               (28, 28), (-28, 28), (28, -28), (-28, -28),
+               (28, 14), (-28, 14), (14, 28), (-14, 28),
+               (28, -14), (-28, -14), (14, -28), (-14, -28)]
     for pin in PINS:
         num, lon, lat = pin
         px = M + (lon + 180) / lon_step * cell
         py = my + (83 - lat) / lat_step * cell
-        cx, cy = px, py
-        for dx, dy in ((0, 0), (12, 0), (-12, 0), (0, 12), (0, -12),
-                       (12, 12), (-12, 12), (12, -12), (-12, -12)):
-            cx, cy = px + dx, py + dy
-            if all((cx - qx) ** 2 + (cy - qy) ** 2 >= 21 ** 2
-                   for qx, qy in placed):
-                break
+        clear = None
+        widest = None
+        for dx, dy in offsets:
+            cx = min(max(px + dx, M + 13), M + map_w - 13)
+            cy = min(max(py + dy, my + 13), my + map_h - 13)
+            mind = min(((cx - qx) ** 2 + (cy - qy) ** 2) ** 0.5
+                       for qx, qy in placed) if placed else 999
+            if mind >= 26 and (clear is None
+                               or abs(dx) + abs(dy) < clear[0]):
+                clear = (abs(dx) + abs(dy), cx, cy)
+            if widest is None or mind > widest[0]:
+                widest = (mind, cx, cy)
+        _, cx, cy = clear if clear is not None else widest
         placed.append((cx, cy))
-        badge(d, cx, cy, num, P, r=10)
+        badge(d, cx, cy, num, P, r=12, fs=13)
     # region legend under the map (the fill colours ARE the regions)
     ly = my + map_h + 6
     d.text((M, ly), "PINS 1\u201313", font=SANS_B(9), fill=P["ink"])
@@ -923,17 +965,9 @@ def draw_page(variant, lead_h, card_h, brief_size):
         lx += 11
         d.text((lx, ly), name, font=SANS(9), fill=P["ink"])
         lx += SANS(9).getlength(name) + 8
-    # markets & money panel under the map: the day's market moves in one
-    # tidy panel. It fits in the map column's slack under the briefs list,
-    # so it costs no page height.
-    mk_y = ly + 16
-    d.text((M, mk_y), "MARKETS & MONEY", font=SANS_B(11), fill=P["navy"])
-    mk_y += 15
-    for mrow in MARKETS:
-        d.text((M, mk_y), mrow, font=SANS(10), fill=P["ink"])
-        mk_y += 12
-    mk_end = mk_y
-    # also list: 32 briefs in 2 columns, numbered 14-45, status inline.
+    # (markets now live in the Day in Numbers band; the map column ends
+    # at the legend, which is the whitespace the page needs.)
+    # also list: 28 briefs in 2 columns, numbered 14-41, status inline.
     # Looser leading than before (15px a row) so the list reads as a
     # list, not a wall of text; the shorter list pays for the air.
     bfnt = SANS(brief_size)
@@ -955,7 +989,7 @@ def draw_page(variant, lead_h, card_h, brief_size):
             tail_w = bfnt.getlength(" \u00b7 ") + bstat.getlength(status)
             lines = wrap(bfnt, text, col_w - 24 - tail_w)
             for li, ln in enumerate(lines):
-                ly2 = yy + li * (brief_size + 4)
+                ly2 = yy + li * (brief_size + 5)
                 d.text((cx0 + 24, ly2), ln, font=bfnt, fill=P["ink"])
                 if li == len(lines) - 1:
                     tx = cx0 + 24 + bfnt.getlength(ln)
@@ -963,18 +997,18 @@ def draw_page(variant, lead_h, card_h, brief_size):
                     tx += bfnt.getlength(" \u00b7 ")
                     d.text((tx, ly2), status, font=bstat,
                            fill=STATUS_COLORS[status])
-            yy += len(lines) * (brief_size + 4)
+            yy += len(lines) * (brief_size + 5)
         max_ay = max(max_ay, yy)
-    y = max(mk_end, max_ay) + 3
+    y = max_ay + 3
     rule(d, M, W - M, y, P["ink"], 2)
     y += 3
 
     # ---- date check (dark card: light-dark rhythm) + footer
-    # No judge-addressed note anywhere. The verdict line sits at the top
-    # of the dark card: gold label, white takeaway, one line. Under it,
-    # the WHAT IT MEANS explainer (same facts, one step further), then
-    # the date check with the full status taxonomy, DISPUTED included.
-    dc = ("All stories happened or were first reported Thursday "
+    # No judge-addressed note anywhere. One synthesis box, not two: the
+    # verdict line and the what-it-means line share the card with the
+    # date check, separated by a single gold rule. The date check keeps
+    # the full status taxonomy, DISPUTED included.
+    dc = ("Every story happened or was first reported Thursday "
           "19 November 2026.  " + EXCLUSIONS +
           "  HOW SURE ARE WE? CONFIRMED \u2014 authority; "
           "REPORTED \u2014 outlet; CLAIM \u2014 one side; "
@@ -984,20 +1018,19 @@ def draw_page(variant, lead_h, card_h, brief_size):
     wim_lines = wrap(SANS(10), WHAT_IT_MEANS,
                      CW - 24 - SANS_B(10).getlength(wim_label))
     card_top = y
-    wim_y = card_top + 33
-    dc_label_y = wim_y + len(wim_lines) * 13 + 14
+    verdict_y = card_top + 9
+    wim_y = verdict_y + 13
+    dc_label_y = wim_y + len(wim_lines) * 13 + 9
     dc_y = dc_label_y + 14
     card_h = (dc_y - card_top) + len(dc_lines) * 13 + 6
     d.rounded_rectangle([M, card_top, W - M, card_top + card_h], radius=6,
                         fill=P["navy"])
     vx = M + 12
-    d.text((vx, card_top + 9), "THE VERDICT \u2014 ", font=SANS_B(10),
+    d.text((vx, verdict_y), "THE VERDICT \u2014 ", font=SANS_B(10),
            fill=P["gold"])
     vx += SANS_B(10).getlength("THE VERDICT \u2014 ")
-    d.text((vx, card_top + 9), VERDICT, font=SANS(10),
+    d.text((vx, verdict_y), VERDICT, font=SANS(10),
            fill=(235, 238, 242))
-    d.line([(M + 12, card_top + 26), (W - M - 12, card_top + 26)],
-           fill=P["gold"], width=1)
     d.text((M + 12, wim_y), wim_label, font=SANS_B(10), fill=P["gold"])
     text_lines(d, M + 12 + SANS_B(10).getlength(wim_label), wim_y,
                wim_lines, SANS(10), (235, 238, 242), leading=13)
@@ -1019,8 +1052,11 @@ def draw_page(variant, lead_h, card_h, brief_size):
 def build(variant):
     """Draw one variant, shrinking art until the page fits. Brief type
     never drops below 10px (readability is a loss reason); art shrinks
-    further instead. Lead art starts at 56, card art at 40."""
-    lead_h, card_h, brief_size = 56, 40, 10
+    further instead. The navy variant without the timeline gets the
+    biggest art; the entry variant keeps the thin timeline rail and
+    slightly smaller art; the cream variant matches the first."""
+    starts = {"a": (80, 56), "b": (76, 52), "c": (80, 56)}
+    lead_h, card_h, brief_size = (*starts[variant], 10)
     while True:
         img, end_y = draw_page(variant, lead_h, card_h, brief_size)
         if end_y <= 1016:
