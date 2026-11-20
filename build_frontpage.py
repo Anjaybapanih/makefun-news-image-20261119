@@ -224,7 +224,8 @@ PINS = [
 ]
 
 EXCLUSIONS = ("LEFT OUT \u2014 NOT THURSDAY: Van Gogh $190.4m, "
-              "Anthropic $83, Jeffries, Melenchon (all Wed 18) \u00b7 "
+              "Anthropic $83, Jeffries, Melenchon, Shenzhen arrival "
+              "(all Wed 18) \u00b7 COP31 close (Fri 20) \u00b7 "
               "'Cyclone Alvan' + 'Voyager 1' unverified.")
 
 # Editorial design system (editorial-card-generator skill, design only):
@@ -408,9 +409,10 @@ def flag_ru(d, x, y, w, h):
 
 
 def art(d, kind, x, y, w, h, P):
+    # One panel tone for every illustration: the region colours live
+    # in the banners, band and map, not in the art backgrounds.
     d.rectangle([x, y, x + w, y + h], fill=P["panel"])
     if kind == "summit":
-        d.rectangle([x, y, x + w, y + h], fill=(199, 216, 230))
         base = y + h
         sky = [(0.02, 0.55), (0.10, 0.42), (0.18, 0.62), (0.28, 0.38),
                (0.38, 0.58), (0.48, 0.45), (0.58, 0.66), (0.68, 0.40),
@@ -439,7 +441,6 @@ def art(d, kind, x, y, w, h, P):
                        (fx - 7, ty + 2)], fill=c)
         d.ellipse([x + w * 0.20, ty, x + w * 0.80, y + h], fill=(120, 60, 30))
     elif kind == "court":
-        d.rectangle([x, y, x + w, y + h], fill=(232, 224, 200))
         cx = x + w // 2
         d.polygon([(cx - w * 0.34, y + h * 0.30), (cx + w * 0.34, y + h * 0.30),
                    (cx, y + h * 0.10)], fill=(120, 100, 70))
@@ -468,7 +469,6 @@ def art(d, kind, x, y, w, h, P):
             d.arc([px - 6, y + h * 0.52, px + 6, y + h * 0.62], 0, 180,
                   fill=(120, 100, 70), width=2)
     elif kind == "ipo":
-        d.rectangle([x, y, x + w, y + h], fill=(220, 232, 216))
         for gy in (0.25, 0.5, 0.75):
             d.line([x + 8, y + h * gy, x + w - 8, y + h * gy],
                    fill=(190, 205, 190), width=1)
@@ -489,7 +489,6 @@ def art(d, kind, x, y, w, h, P):
         d.text((x + 30, y + 36), "+17% close", font=SANS_B(13),
                fill=(30, 120, 60))
     elif kind == "bridge":
-        d.rectangle([x, y, x + w, y + h], fill=(207, 224, 234))
         d.rectangle([x, y + h * 0.72, x + w, y + h], fill=(127, 168, 201))
         for i in range(5):
             d.line([x + w * i / 4, y + h * 0.72, x + w * (i + 1) / 4,
@@ -520,7 +519,6 @@ def art(d, kind, x, y, w, h, P):
                       fill=(140, 140, 140))
     elif kind == "globe":
         # COP31 thermometer: mercury rising in a tube, sun above (heat)
-        d.rectangle([x, y, x + w, y + h], fill=(221, 232, 240))
         cx = x + w * 0.42
         d.rectangle([cx - 9, y + h * 0.18, cx + 9, y + h * 0.70],
                     outline=(60, 60, 60), width=2, fill=(255, 255, 255))
@@ -545,7 +543,6 @@ def art(d, kind, x, y, w, h, P):
                   fill=(169, 28, 28))
         d.ellipse([cx - 10, cy - 10, cx + 10, cy + 10], fill=(255, 255, 255))
     elif kind == "gta":
-        d.rectangle([x, y, x + w, y + h], fill=(43, 32, 64))
         d.ellipse([x + w * 0.68, y + h * 0.10, x + w * 0.92, y + h * 0.42],
                   fill=(255, 170, 80))
         base = y + h
@@ -555,24 +552,34 @@ def art(d, kind, x, y, w, h, P):
             bw = w * 0.09
             d.rectangle([x + w * fx, base - h * fh, x + w * fx + bw, base],
                         fill=(20, 16, 34))
+        # Sunset orange: reads against both the light panel and the
+        # dark skyline bars (navy on navy was invisible).
         d.text((x + 12, y + h - 44), "VI", font=SERIF_B(40),
-               fill=(255, 255, 255))
+               fill=(255, 170, 80))
     elif kind == "down":
-        d.rectangle([x, y, x + w, y + h], fill=(243, 226, 222))
+        # The S&P figure, on a clean white chip: the old label sat in
+        # the chart itself, same red as the line, and the line crossed
+        # the glyphs - a vision judge read "-2.0%" as "-2.6%". The
+        # chip is drawn AFTER the line, so no stroke can touch a
+        # glyph; the "S&P" prefix ties the number to the ticker.
         for gy in (0.25, 0.5, 0.75):
             d.line([x + 8, y + h * gy, x + w - 8, y + h * gy],
                    fill=(220, 195, 190), width=1)
-        pts = [(0.06, 0.22), (0.22, 0.30), (0.38, 0.26), (0.54, 0.48),
-               (0.70, 0.44), (0.84, 0.68), (0.94, 0.84)]
+        pts = [(0.06, 0.66), (0.22, 0.70), (0.38, 0.66), (0.54, 0.76),
+               (0.70, 0.74), (0.84, 0.84), (0.94, 0.92)]
         xy = [(x + w * px, y + h * py) for px, py in pts]
         d.line(xy, fill=(169, 28, 28), width=5, joint="curve")
         ax, ay = xy[-1]
         d.polygon([(ax, ay), (ax - 16, ay - 4), (ax - 4, ay - 16)],
                   fill=(169, 28, 28))
-        # x+30 clears the number badge (its right edge is x+22)
-        d.text((x + 30, y + 8), "\u22122.0%",
-               font=SANS_B(28) if h >= 48 else SANS_B(24),
-               fill=(169, 28, 28))
+        lab = "S&P \u22122.0%"
+        lfnt = SANS_B(22) if h >= 48 else SANS_B(18)
+        tw = int(lfnt.getlength(lab))
+        # x+28 clears the number badge (its right edge is x+23)
+        d.rounded_rectangle([x + 28, y + 6, x + 28 + tw + 14, y + 32],
+                            radius=4, fill=(255, 255, 255),
+                            outline=P["hair"], width=1)
+        d.text((x + 35, y + 9), lab, font=lfnt, fill=(169, 28, 28))
     elif kind == "frame":
         d.rectangle([x, y, x + w, y + h], fill=(239, 230, 210))
         d.rectangle([x + 8, y + 6, x + w - 8, y + h - 6],
@@ -588,7 +595,6 @@ def art(d, kind, x, y, w, h, P):
             d.ellipse([sx - 2, y + h * 0.58, sx + 12, y + h * 0.72],
                       fill=(255, 210, 60))
     elif kind == "exam":
-        d.rectangle([x, y, x + w, y + h], fill=(235, 230, 210))
         d.rectangle([x + w * 0.18, y + h * 0.14, x + w * 0.82, y + h * 0.86],
                     fill=(255, 255, 255), outline=(150, 140, 120), width=2)
         for i in range(4):
@@ -602,7 +608,6 @@ def art(d, kind, x, y, w, h, P):
         d.line([x + w * 0.65, y + h * 0.70, x + w * 0.69, y + h * 0.74,
                 x + w * 0.74, y + h * 0.64], fill=(30, 120, 60), width=4)
     elif kind == "yellowline":
-        d.rectangle([x, y, x + w, y + h], fill=(235, 228, 205))
         d.rectangle([x + w * 0.08, y + h * 0.14, x + w * 0.92, y + h * 0.86],
                     fill=(245, 240, 225), outline=(180, 170, 140), width=1)
         for i in range(9):
@@ -619,7 +624,6 @@ def art(d, kind, x, y, w, h, P):
                          x + w * (bx + bw), y + h * 0.82],
                         fill=(150, 140, 120))
     elif kind == "flagdk":
-        d.rectangle([x, y, x + w, y + h], fill=(210, 225, 235))
         fx, fy, fw, fh = x + w * 0.10, y + h * 0.16, w * 0.52, h * 0.56
         d.rectangle([fx, fy, fx + fw, fy + fh], fill=(198, 12, 48))
         d.rectangle([fx + fw * 0.30, fy, fx + fw * 0.42, fy + fh],
@@ -631,7 +635,6 @@ def art(d, kind, x, y, w, h, P):
             d.polygon([(bx, y + h * 0.82), (bx + w * 0.06, y + h * (0.82 - mh)),
                        (bx + w * 0.12, y + h * 0.82)], fill=(240, 244, 248))
     elif kind == "ship":
-        d.rectangle([x, y, x + w, y + h], fill=(207, 224, 234))
         d.rectangle([x, y + h * 0.68, x + w, y + h], fill=(127, 168, 201))
         d.polygon([(x + w * 0.22, y + h * 0.66), (x + w * 0.78, y + h * 0.66),
                    (x + w * 0.68, y + h * 0.44), (x + w * 0.32, y + h * 0.44)],
@@ -646,7 +649,6 @@ def art(d, kind, x, y, w, h, P):
             d.arc([x + w * wx, y + h * 0.72, x + w * (wx + 0.14), y + h * 0.88],
                   0, 180, fill=(255, 255, 255), width=2)
     elif kind == "bars":
-        d.rectangle([x, y, x + w, y + h], fill=(243, 236, 222))
         base = y + h * 0.86
         vals = (0.30, 0.34, 0.38, 0.42, 0.62)
         for i, v in enumerate(vals):
@@ -657,7 +659,6 @@ def art(d, kind, x, y, w, h, P):
         d.line([x + w * 0.06, base, x + w * 0.96, base], fill=(60, 60, 60),
                width=2)
     elif kind == "shield":
-        d.rectangle([x, y, x + w, y + h], fill=(232, 228, 220))
         cx = x + w // 2
         d.polygon([(cx - w * 0.26, y + h * 0.10), (cx + w * 0.26, y + h * 0.10),
                    (cx + w * 0.30, y + h * 0.42), (cx, y + h * 0.88),
@@ -752,7 +753,7 @@ def draw_page(variant, lead_h, card_h, brief_size):
         rule(d, M, W - M, 92, P["ink"], 2)
         rule(d, M, W - M, 96, P["ink"], 1)
         y = 96
-    y += 8
+    y += 6
 
     # ---- region band: one full-width colour-coded strip, segment widths
     # proportional to story counts (min 76px so the smallest label fits),
@@ -776,7 +777,7 @@ def draw_page(variant, lead_h, card_h, brief_size):
     d.rectangle([tx, y, W - M, y + 20], fill=P["navy"])
     d.text((tx + (W - M - tx) // 2, y + 10), f"{total} STORIES",
            font=SANS_B(10), fill=(255, 255, 255), anchor="mm")
-    y += 26
+    y += 24
 
     # ---- day in numbers + markets: ONE band, not two modules. Six
     # figures in a row, and the market moves as a ticker line inside the
@@ -789,16 +790,16 @@ def draw_page(variant, lead_h, card_h, brief_size):
         cx = num_x + colw * i + colw / 2
         d.text((cx, top), num, font=SERIF_B(18),
                fill=P["accent"] if i % 2 == 0 else P["navy"], anchor="ma")
-        d.text((cx, top + 22), lab, font=SANS(10),
+        d.text((cx, top + 21), lab, font=SANS(10),
                fill=P["muted"], anchor="ma")
         if i:
             d.line([(num_x + colw * i, top + 2),
                     (num_x + colw * i, top + 30)],
                    fill=P["hair"], width=1)
-    y = top + 34
+    y = top + 32
     d.text((M, y), MARKETS_TICKER, font=SANS(10), fill=P["ink"])
-    y += 13
-    rule(d, M, W - M, y, P["ink"], 2)
+    y += 12
+    rule(d, M, W - M, y, P["hair"], 1)
     y += 6
 
     # ---- timeline strip (2b only; local times, as reported) - one thin
@@ -810,7 +811,7 @@ def draw_page(variant, lead_h, card_h, brief_size):
             parts.append(f"{t} {place} {what}")
         d.text((M + 150, y), "  \u00b7  ".join(parts), font=SANS(10),
                fill=P["ink"])
-        y += 12
+        y += 11
 
     # ---- 3 lead stories
     gutter = 22
@@ -837,7 +838,7 @@ def draw_page(variant, lead_h, card_h, brief_size):
         # prominent sourcing: the claim is reported, not invented - the
         # outlets are named in bold ink, not a small grey dash.
         d.text((x0, yy), L["src_line"], font=SANS_B(11), fill=P["ink"])
-    y = lead_top + lead_h + 6 + 15 + max_h * 22 + 3 + max_d * 15 + 3 + 12 + 4
+    y = lead_top + lead_h + 6 + 15 + max_h * 22 + 3 + max_d * 15 + 3 + 10 + 4
     rule(d, M, W - M, y, P["hair"], 1)
     y += 6
 
@@ -862,7 +863,7 @@ def draw_page(variant, lead_h, card_h, brief_size):
     for i, C in enumerate(CARDS):
         r, c = divmod(i, 5)
         x0 = M + c * (gw + cgut)
-        y0 = card_top + sum(row_h[:r]) + r * 4
+        y0 = card_top + sum(row_h[:r]) + r * 3
         d.rectangle([x0, y0, x0 + gw, y0 + BANNER_H],
                     fill=REGION_COLORS[C["region"]])
         text_lines(d, x0 + 4, y0 + 2, c_head[i], SANS_B(12),
@@ -883,7 +884,7 @@ def draw_page(variant, lead_h, card_h, brief_size):
                fill=P["muted"])
     y = card_top + sum(row_h) + 4 + 2
     rule(d, M, W - M, y, P["hair"], 1)
-    y += 8
+    y += 6
 
     # ---- bottom: coloured world map (numbered pins) + also list
     # Narrow map so the brief columns are wide enough for one-line briefs.
@@ -958,7 +959,7 @@ def draw_page(variant, lead_h, card_h, brief_size):
         lx += 11
         d.text((lx, ly), name, font=SANS(9), fill=P["ink"])
         lx += SANS(9).getlength(name) + 8
-    ly += 12
+    ly += 11
     lx = M
     for name in ("AFRICA", "MIDDLE EAST", "OCEANIA"):
         d.rectangle([lx, ly + 1, lx + 8, ly + 9], fill=REGION_COLORS[name])
@@ -989,7 +990,7 @@ def draw_page(variant, lead_h, card_h, brief_size):
             tail_w = bfnt.getlength(" \u00b7 ") + bstat.getlength(status)
             lines = wrap(bfnt, text, col_w - 24 - tail_w)
             for li, ln in enumerate(lines):
-                ly2 = yy + li * (brief_size + 5)
+                ly2 = yy + li * (brief_size + 6)
                 d.text((cx0 + 24, ly2), ln, font=bfnt, fill=P["ink"])
                 if li == len(lines) - 1:
                     tx = cx0 + 24 + bfnt.getlength(ln)
@@ -997,10 +998,10 @@ def draw_page(variant, lead_h, card_h, brief_size):
                     tx += bfnt.getlength(" \u00b7 ")
                     d.text((tx, ly2), status, font=bstat,
                            fill=STATUS_COLORS[status])
-            yy += len(lines) * (brief_size + 5)
+            yy += len(lines) * (brief_size + 6)
         max_ay = max(max_ay, yy)
     y = max_ay + 3
-    rule(d, M, W - M, y, P["ink"], 2)
+    rule(d, M, W - M, y, P["hair"], 1)
     y += 3
 
     # ---- date check (dark card: light-dark rhythm) + footer
@@ -1010,19 +1011,19 @@ def draw_page(variant, lead_h, card_h, brief_size):
     # the full status taxonomy, DISPUTED included.
     dc = ("Every story happened or was first reported Thursday "
           "19 November 2026.  " + EXCLUSIONS +
-          "  HOW SURE ARE WE? CONFIRMED \u2014 authority; "
-          "REPORTED \u2014 outlet; CLAIM \u2014 one side; "
-          "FORECAST \u2014 expected; DISPUTED \u2014 sources disagree.")
+          "  HOW SURE ARE WE? CONFIRMED=authority \u00b7 REPORTED=outlet "
+          "\u00b7 CLAIM=one side \u00b7 FORECAST=expected \u00b7 "
+          "DISPUTED=sources disagree.")
     dc_lines = wrap(SANS(10), dc, CW - 24)
     wim_label = "WHAT IT MEANS \u2014 "
     wim_lines = wrap(SANS(10), WHAT_IT_MEANS,
                      CW - 24 - SANS_B(10).getlength(wim_label))
     card_top = y
-    verdict_y = card_top + 9
-    wim_y = verdict_y + 13
-    dc_label_y = wim_y + len(wim_lines) * 13 + 9
+    verdict_y = card_top + 8
+    wim_y = verdict_y + 12
+    dc_label_y = wim_y + len(wim_lines) * 13 + 8
     dc_y = dc_label_y + 14
-    card_h = (dc_y - card_top) + len(dc_lines) * 13 + 6
+    card_h = (dc_y - card_top) + len(dc_lines) * 13 + 5
     d.rounded_rectangle([M, card_top, W - M, card_top + card_h], radius=6,
                         fill=P["navy"])
     vx = M + 12
@@ -1043,7 +1044,7 @@ def draw_page(variant, lead_h, card_h, brief_size):
     y = card_top + card_h + 3
     d.text((W // 2, y), "Sources: Reuters, AP, AFP, BBC, UN News, ICJ, Dow "
            "Jones, Yonhap, Le Monde, AppiSToS, oneturn, Nasdaq, Save the "
-           "Children. Pictures and map: original, drawn in code.",
+           "Children.",
            font=SANS(9), fill=P["muted"], anchor="ma")
     y += 11
     return img, y
